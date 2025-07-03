@@ -1,0 +1,5 @@
+- name: restart fabric
+  systemd:
+    name: fabric
+    state: restarted
+    enabled: yes

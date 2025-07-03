@@ -1,0 +1,131 @@
+# 7️⃣ World repo clone & sync ---------------------------------------------
+- name: Ensure tmp clone dir exists
+  file:
+    path: "/opt/tmp_worlds"
+    state: directory
+    owner: minecraft
+    group: minecraft
+    mode: "0755"
+
+- name: Ensure .ssh directory exists
+  file:
+    path: /home/minecraft/.ssh
+    state: directory
+    owner: minecraft
+    group: minecraft
+    mode: "0700"
+
+- name: Add GitHub.com to known_hosts
+  known_hosts:
+    path: /home/minecraft/.ssh/known_hosts
+    name: github.com
+    key: "{{ lookup('pipe', 'ssh-keyscan -t rsa github.com') }}"
+    state: present
+    hash_host: false
+
+- name: Check if deploy key already exists
+  stat:
+    path: /home/minecraft/.ssh/id_rsa_minecraft_worlds.pub
+  register: key_stat
+
+- name: Generate deploy key for GitHub (first time only)
+  openssh_keypair:
+    path: /home/minecraft/.ssh/id_rsa_minecraft_worlds
+    type: rsa
+    size: 4096
+    owner: minecraft
+    group: minecraft
+    mode: '0600'
+  when: not key_stat.stat.exists
+  register: github_key
+
+- name: Show GitHub deploy key instructions (if new key)
+  debug:
+    msg: |
+      A new SSH deploy key has been generated for the Minecraft server.
+
+      **Next step (manual once-off):**
+      1. Open your GitHub repository → *Settings* → *Deploy keys*.
+      2. Click **Add deploy key**.
+      3. Paste the public key(.pub), give it a name, and tick “Allow write access” if you want the server to push backups.
+  when: github_key.changed or not key_stat.stat.exists
+
+- name: Clone or pull world repository
+  git:
+    repo: "{{ world_repo }}"
+    dest: "/opt/tmp_worlds/sinchon-mc"
+    version: "{{ world_repo_version | default('main') }}"
+    key_file: "/home/minecraft/.ssh/id_rsa_minecraft_worlds"
+    update: yes
+    force: yes
+    accept_hostkey: true
+  become_user: minecraft
+
+# -- mtime logic ----------------------------------------------------------
+- name: Gather repo level.dat mtimes
+  stat:
+    path: "/opt/tmp_worlds/sinchon-mc/{{ world_source_subdir }}/{{ item }}/level.dat"
+  loop:
+    - Sinchon
+    - Sinchon_nether
+    - Sinchon_the_end
+  register: repo_level_stats
+  failed_when: false
+  become_user: minecraft
+
+- name: Gather server level.dat mtimes
+  stat:
+    path: "{{ world_target_dir }}/{{ item }}/level.dat"
+  loop:
+    - Sinchon
+    - Sinchon_nether
+    - Sinchon_the_end
+  register: server_level_stats
+  failed_when: false
+
+- name: Compute sync requirement
+  set_fact:
+    server_world_missing: "{{ (repo_level_stats.results | zip(server_level_stats.results) | selectattr('0.stat.exists') | selectattr('1.stat.exists', 'equalto', False) | list | length) > 0 }}"
+    repo_max_mtime: "{{ (repo_level_stats.results | selectattr('stat.exists') | map(attribute='stat.mtime') | list | default([0]) | max) | float }}"
+    server_max_mtime: "{{ (server_level_stats.results | selectattr('stat.exists') | map(attribute='stat.mtime') | list | default([0]) | max) | float }}"
+
+- name: Determine if world sync is needed
+  set_fact:
+    do_world_sync: "{{ server_world_missing or (repo_max_mtime > server_max_mtime) }}"
+
+- name: Rsync worlds into minecraft dir
+  ansible.posix.synchronize:
+    src: "/opt/tmp_worlds/sinchon-mc/{{ world_source_subdir }}/"
+    dest: "{{ world_target_dir }}/"
+    rsync_opts: ["--checksum"]
+    recursive: yes
+    delete: no   # do not delete server‑side worlds that are not in repo
+  when: do_world_sync
+  delegate_to: "{{ inventory_hostname }}"  # run rsync locally on target node
+  become_user: minecraft
+  notify: restart fabric
+
+- name: Create sync script
+  copy:
+    dest: /usr/local/bin/world_git_sync.sh
+    mode: "0755"
+    owner: minecraft
+    group: minecraft
+    content: |
+      #!/usr/bin/env bash
+      set -euo pipefail
+      cd /opt/tmp_worlds/sinchon-mc
+      git add {{ world_source_subdir }}/Sinchon{{','}}{{ world_source_subdir }}/Sinchon_nether{{','}}{{ world_source_subdir }}/Sinchon_the_end
+      if ! git diff --cached --quiet; then
+        ts=$(date +"%Y-%m-%d_%H-%M")
+        git commit -m "Auto‑backup $ts"
+        git push origin {{ world_repo_version }}
+      fi
+
+- name: Schedule daily world sync cron
+  cron:
+    name: "Daily world git push"
+    user: minecraft
+    minute: "{{ cron_sync_min }}"
+    hour: "{{ cron_sync_hour }}"
+    job: "/usr/local/bin/world_git_sync.sh >> /var/log/world_git_sync.log 2>&1"

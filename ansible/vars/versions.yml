@@ -1,0 +1,3 @@
+fabric_installer_ver: "1.0.3"
+afabric_mc_version: "1.21.5"   # ✏️  Minecraft 서버 버전
+afabric_loader_version: "0.16.14"  # ✏️  Fabric Loader 버전

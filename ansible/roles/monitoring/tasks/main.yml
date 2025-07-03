@@ -1,0 +1,44 @@
+- name: Ensure node_exporter group & user
+  group: name=node_exporter system=yes
+- user:
+    name: node_exporter
+    group: node_exporter
+    shell: /usr/sbin/nologin
+    system: yes
+
+- name: Download node_exporter 1.9.1 tar.gz
+  get_url:
+    url: https://github.com/prometheus/node_exporter/releases/download/v1.9.1/node_exporter-1.9.1.linux-amd64.tar.gz
+    dest: /tmp/node_exporter-1.9.1.tar.gz
+    mode: "0644"
+    checksum: "sha256:becb950ee80daa8ae7331d77966d94a611af79ad0d3307380907e0ec08f5b4e8"   # ✔ 무결성 검증
+  register: dl_node
+
+- name: Unpack binary
+  unarchive:
+    src: /tmp/node_exporter-1.9.1.tar.gz
+    dest: /usr/local/bin/
+    remote_src: yes
+    creates: /usr/local/bin/node_exporter
+    extra_opts:
+      - --strip-components=1        # 디렉터리 계층 제거
+  when: dl_node.changed            # 처음 다운로드 했을 때만
+
+- name: Create systemd service
+  copy:
+    dest: /etc/systemd/system/node_exporter.service
+    content: |
+      [Unit]
+      Description=Prometheus Node Exporter
+      After=network.target
+
+      [Service]
+      User=node_exporter
+      ExecStart=/usr/local/bin/node_exporter
+      Restart=on-failure
+
+      [Install]
+      WantedBy=multi-user.target
+  notify: restart node_exporter
+
+- meta: flush_handlers   # 즉시 핸들러 실행

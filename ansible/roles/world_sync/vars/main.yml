@@ -1,0 +1,6 @@
+world_repo: "git@github.com:easter423/sinchon-mc.git"
+world_repo_version: "main"            # branch / tag
+world_source_subdir: "paper-server"    # inside repo
+world_target_dir: "/opt/minecraft"     # final world path on server
+cron_sync_hour: 5                       # KST 05:00 every day
+cron_sync_min: 0

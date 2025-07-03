@@ -1,0 +1,9 @@
+minecraft_server_properties:
+  motd: "Welcome to Sinchon Server!"
+  max-players: "10"
+  difficulty: "normal"
+  gamemode: "survival"
+  level-name: "Sinchon"
+  level-type: "minecraft:normal"
+  server-ip: ""
+  #enforce-whitelist: "true"

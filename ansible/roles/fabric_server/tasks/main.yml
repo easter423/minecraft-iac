@@ -1,0 +1,150 @@
+# 1️⃣ Create minecraft user & basic packages --------------------------------
+- name: Create service user & home dir
+  user:
+    name: minecraft
+    home: /opt/minecraft
+    shell: /usr/sbin/nologin
+    create_home: yes
+
+- name: Install ACL tools (Ansible tmp ACL fix)
+  apt:
+    name: acl
+    state: present
+    update_cache: yes
+
+# 2️⃣ System timezone ------------------------------------------------------
+- name: Set timezone Asia/Seoul
+  community.general.timezone:
+    name: "Asia/Seoul"
+
+# 3️⃣ Fabric installer download -------------------------------------------
+- name: Download Fabric installer {{ fabric_installer_ver }} (as minecraft)
+  get_url:
+    url: https://maven.fabricmc.net/net/fabricmc/fabric-installer/{{ fabric_installer_ver }}/fabric-installer-{{ fabric_installer_ver }}.jar
+    dest: /opt/minecraft/fabric-installer.jar
+    mode: "0755"
+    checksum: "sha256:38aa82ab1ef829b7aa3f2143fcc93bba706a8e18835be731d0fdf231d274b07f"
+  become_user: minecraft
+
+- name: Run fabric installer (headless)
+  command: >-
+    java -jar fabric-installer.jar server -downloadMinecraft
+    -dir /opt/minecraft
+    -mcversion {{ afabric_mc_version }}
+    -loader {{ afabric_loader_version }}
+  args:
+    chdir: /opt/minecraft
+    creates: /opt/minecraft/fabric-server-launch.jar
+  become_user: minecraft
+
+- name: Start server once to create eula.txt & world dirs (headless)
+  command: java -Xmx1G -Xms1G -jar fabric-server-launch.jar nogui
+  args:
+    chdir: /opt/minecraft
+    creates: /opt/minecraft/eula.txt
+  become_user: minecraft
+
+- name: Accept Mojang EULA
+  lineinfile:
+    path: /opt/minecraft/eula.txt
+    regexp: '^eula='
+    line: eula=true
+    owner: minecraft
+    group: minecraft
+
+- name: Configure server.properties
+  lineinfile:
+    path: /opt/minecraft/server.properties
+    regexp: '^{{ item.key }}='
+    line: '{{ item.key }}={{ item.value }}'
+    create: yes
+    owner: minecraft
+    group: minecraft
+  loop: "{{ minecraft_server_properties | dict2items }}"
+  notify: restart fabric
+
+# 4️⃣ Ensure directory ownership (critical) --------------------------------
+- name: Ensure /opt/minecraft recursively owned by minecraft
+  file:
+    path: /opt/minecraft
+    owner: minecraft
+    group: minecraft
+    recurse: yes
+
+# 5️⃣ systemd unit ---------------------------------------------------------
+#- name: Gather running services facts
+#  ansible.builtin.service_facts:
+
+# 7. Deploy/upgrade systemd unit *only when service not running*
+- name: Deploy/upgrade fabric.service unit
+  copy:
+    dest: /etc/systemd/system/fabric.service
+    owner: root
+    group: root
+    mode: "0644"
+    content: |
+      [Unit]
+      Description=Fabric Minecraft Server
+      After=network.target
+      [Service]
+      User=minecraft
+      WorkingDirectory=/opt/minecraft
+      ExecStart=/usr/bin/java -Xms6G -Xmx6G \
+        -XX:+UseG1GC -XX:+ParallelRefProcEnabled -XX:MaxGCPauseMillis=200 \
+        -XX:+UnlockExperimentalVMOptions -XX:+DisableExplicitGC -XX:+AlwaysPreTouch \
+        -XX:G1NewSizePercent=30 -XX:G1MaxNewSizePercent=40 -XX:G1HeapRegionSize=8M \
+        -XX:G1ReservePercent=20 -XX:G1HeapWastePercent=5 -XX:G1MixedGCCountTarget=4 \
+        -XX:InitiatingHeapOccupancyPercent=15 -XX:G1MixedGCLiveThresholdPercent=90 \
+        -XX:G1RSetUpdatingPauseTimePercent=5 -XX:SurvivorRatio=32 -XX:+PerfDisableSharedMem \
+        -XX:MaxTenuringThreshold=1 -Dusing.aikars.flags=https://mcflags.emc.gs \
+        -Daikars.new.flags=true -jar fabric-server-launch.jar nogui
+      Restart=on-failure
+      [Install]
+      WantedBy=multi-user.target
+#  when: "'fabric.service' not in ansible_facts.services or ansible_facts.services['fabric.service'].state != 'running'"
+  notify: reload systemd
+
+# 6️⃣ Mod management -------------------------------------------------------
+- name: Ensure mods directory exists & owned by minecraft
+  file:
+    path: /opt/minecraft/mods
+    state: directory
+    owner: minecraft
+    group: minecraft
+    mode: "0755"
+
+- name: Download / update mods
+  get_url:
+    url: "{{ item.url }}"
+    dest: "/opt/minecraft/mods/{{ item.name }}"
+    checksum: "{{ item.checksum }}"
+    owner: minecraft
+    group: minecraft
+    mode: "0644"
+  loop: "{{ fabric_mods }}"
+  become_user: minecraft
+  register: mods_fetched
+
+- name: List existing server mods
+  find:
+    paths: /opt/minecraft/mods/
+    patterns: "*.jar"
+  register: mods_existing
+  become_user: minecraft
+
+- name: Delete unmanaged mods
+  file:
+    path: "{{ item.path }}"
+    state: absent
+  loop: "{{ mods_existing.files }}"
+  when: "item.path | basename not in (fabric_mods | map(attribute='name') | list)"
+  become_user: minecraft
+  register: mods_removed
+
+- name: Restart fabric when mods set changed
+  systemd:
+    name: fabric
+    state: restarted
+    enabled: yes
+  when: mods_fetched.changed or mods_removed.changed
+  notify: reload systemd

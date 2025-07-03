@@ -1,0 +1,11 @@
+/.venv
+/0
+/gcp-key
+/tofu-key
+*/.terraform/*
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.out
+*.tfplan
+*.tfplan.*

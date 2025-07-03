@@ -1,0 +1,5 @@
+- name: Install OpenJDK 21
+  apt:
+    name: openjdk-21-jdk-headless
+    state: present
+    update_cache: yes

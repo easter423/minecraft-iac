@@ -1,0 +1,11 @@
+- hosts: minecraft
+  become: yes
+  vars_files:
+    - vars/versions.yml # Contains afabric_mc_version, afabric_loader_version
+    - vars/mods.yml # Contains fabric_mods
+    - vars/server_properties.yml # Contains minecraft_server_properties
+  roles:
+    - java21
+    - fabric_server
+    - world_sync
+    - monitoring
