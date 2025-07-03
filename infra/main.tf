@@ -24,14 +24,11 @@ resource "google_compute_instance" "instance-20250702-074431" {
     goog-ops-agent-policy = "v2-x86-template-1-4-0"
   }
 
-  machine_type = "n2-standard-2"
+  machine_type = "n2-custom-2-10240"
 
   metadata = {
     enable-osconfig = "TRUE"
-    ssh-keys = <<EOT
-      ubuntu:ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINzp6ZVMEbAVNXo8s7YLI9KkQ1LFqMLQzW1JjOAUvqnc minecraft-fabric
-      angryapple1103:ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCg8az7ILEKazAQq1Vd9XfAC1AxZLBSWIECxKuJtFGp6a4+0LfZoXGhZjqXk89PDLAw5j97R7y9kstW00Ho2vHxaDFpMNwdogECLPCfU1Np7wwz6uk3iEQ5YFgGU4DLd6xUVwyJS8co7VuEUn1MlWOr3VUfTHSQD7zLZ7aInTIaUZ7m7bhAwLE4ug8nCOQnB0qM0WKqr80DegiOZED3Er6GsIt6AScEd/TIKRaAcbFJ7lWggqLK5f9bFQnRgDMPlGjRx6H13W13qfCOKbsLB44CGSSFvHTHJOd3/vng6UExFAAX7nBj/J7VGSquI9h7bmUvD1Kfk0vwzf/XG9YhyRHd angryapple1103
-    EOT
+    ssh-keys = "${var.ssh_public_keys}"
   }
 
   name = "instance-20250702-074431"
@@ -44,7 +41,7 @@ resource "google_compute_instance" "instance-20250702-074431" {
 
     queue_count = 0
     stack_type  = "IPV4_ONLY"
-    subnetwork  = "projects/quixotic-alloy-464416-d9/regions/asia-northeast3/subnetworks/default"
+    subnetwork  = "projects/${var.project_id}/regions/${var.region}/subnetworks/default"
   }
 
   scheduling {
@@ -71,9 +68,9 @@ resource "google_compute_instance" "instance-20250702-074431" {
 
 module "ops_agent_policy" {
   source          = "github.com/terraform-google-modules/terraform-google-cloud-operations/modules/ops-agent-policy"
-  project         = "quixotic-alloy-464416-d9"
+  project         = var.project_id
   zone            = var.zone
-  assignment_id   = "goog-ops-agent-v2-x86-template-1-4-0-asia-northeast3-c"
+  assignment_id   = "goog-ops-agent-v2-x86-template-1-4-0-${var.zone}"
   agents_rule = {
     package_state = "installed"
     version = "latest"

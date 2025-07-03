@@ -5,5 +5,5 @@ minecraft_server_properties:
   gamemode: "survival"
   level-name: "Sinchon"
   level-type: "minecraft:normal"
-  server-ip: ""
+  view-distance: "15"
   #enforce-whitelist: "true"

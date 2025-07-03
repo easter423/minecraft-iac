@@ -113,6 +113,7 @@ PROJECT_ID=$(gcloud config get-value project 2>/dev/null || echo "")
 if [[ "$ACTIVE" != "True" || -z "$PROJECT_ID" ]]; then
   echo -e "\n🛠️ gcloud init 진행 — 프로젝트 ID, 리전을 지정하세요."
   gcloud init --no-launch-browser
+  gcloud auth application-default login --no-launch-browser
 else
   echo "✅ gcloud 이미 초기화됨 (project=$PROJECT_ID)"
 fi
