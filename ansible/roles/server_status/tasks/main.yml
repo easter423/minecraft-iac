@@ -1,0 +1,44 @@
+- name: Gather service facts
+  service_facts:
+
+- name: Show Fabric service status
+  debug:
+    var: ansible_facts.services['fabric.service']
+
+- name: Show CPU load
+  command: uptime
+  register: uptime_out
+
+- name: Display load averages
+  debug:
+    msg: "{{ uptime_out.stdout }}"
+
+- name: Show memory usage
+  command: free -m
+  register: mem_out
+
+- name: Display memory info
+  debug:
+    msg: "{{ mem_out.stdout }}"
+
+- name: Show disk usage
+  command: df -h /opt/minecraft
+  register: disk_out
+
+- name: Display disk info
+  debug:
+    msg: "{{ disk_out.stdout }}"
+
+- name: Check if port 25565 is open
+  wait_for:
+    host: "{{ inventory_hostname }}"
+    port: 25565
+    timeout: 3
+    state: started
+  register: port_status
+  ignore_errors: yes
+
+- name: Report port status
+  debug:
+    msg: "Port 25565 open: {{ port_status is not failed }}"
+
