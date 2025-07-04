@@ -19,7 +19,7 @@
 
 - name: Display memory info
   debug:
-    msg: "{{ mem_out.stdout }}"
+    var: mem_out.stdout_lines
 
 - name: Show disk usage
   command: df -h /opt/minecraft
@@ -27,7 +27,7 @@
 
 - name: Display disk info
   debug:
-    msg: "{{ disk_out.stdout }}"
+    var: disk_out.stdout_lines
 
 - name: Check if port 25565 is open
   wait_for:
