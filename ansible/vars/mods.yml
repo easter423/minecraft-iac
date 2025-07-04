@@ -56,5 +56,17 @@ fabric_mods:
   - name: Chunky.jar
     url: https://cdn.modrinth.com/data/fALzjamp/versions/mhLtMoLk/Chunky-Fabric-1.4.36.jar
     checksum: "sha256:bcbb6daef05ebe26b0be1324d9972337929e713e10cbea2ce0512a30f601efb5"
+  - name: Clumps.jar
+    url: https://cdn.modrinth.com/data/Wnxd13zP/versions/nH8YfRWs/Clumps-fabric-1.21.5-23.0.0.1.jar
+    checksum: "sha256:e9daefb44cc705dae364148853ef93944e382b52bb509bc7d9bbc4583ed2eb7b"
+  - name: LuckPerms.jar
+    url: https://cdn.modrinth.com/data/Vebnzrzj/versions/sq8a8S4D/LuckPerms-Fabric-5.5.4.jar
+    checksum: "sha256:9ab05e409c901bbf1f2b6cfd8ba6a754c2c2c2353207debe134e394b5d8f2066"
+  - name: TAB.jar
+    url: https://cdn.modrinth.com/data/gG7VFbG0/versions/ahTabLeS/TAB%20v5.2.1.jar
+    checksum: "sha256:05af92eececf7d037f5ea669a8c63c6dbcb1baffb5b22d1eb18a1a77894cb119"
+  - name: bluemap.jar
+    url: https://cdn.modrinth.com/data/swbUV1cr/versions/Dr2hvJBc/bluemap-5.7-fabric.jar
+    checksum: "sha256:67e7bd3037507c04ecfab8543222ad87552a81db85940c3c9935b2c517422fc4"
   
 # ➕ Add more mods here as needed

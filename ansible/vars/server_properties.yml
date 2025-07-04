@@ -1,5 +1,5 @@
 minecraft_server_properties:
-  motd: "Welcome to Sinchon Server!"
+  motd: "\u00a7c(\uacbd)\u00a7a Sinchon\u00a72 Server\u00a7e \uc7ac\u00a76\uac1c\u00a7e\uc7a5\u00a7c (\ucd95)\u00a7r\n\u00a77\uc6b4\uc601 \uae30\uac04: \u00a7f~25.09.29"
   max-players: "10"
   difficulty: "normal"
   gamemode: "survival"
@@ -7,3 +7,5 @@ minecraft_server_properties:
   level-type: "minecraft:normal"
   view-distance: "15"
   #enforce-whitelist: "true"
+
+ # https://minecraft.tools/en/motd.php

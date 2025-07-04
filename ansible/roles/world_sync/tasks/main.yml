@@ -53,8 +53,8 @@
 - name: Clone or pull world repository
   git:
     repo: "{{ world_repo }}"
-    dest: "/opt/tmp_worlds/sinchon-mc"
-    version: "{{ world_repo_version | default('main') }}"
+    dest: "{{ world_repo_dir }}"
+    version: "{{ world_repo_branch | default('main') }}"
     key_file: "/home/minecraft/.ssh/id_rsa_minecraft_worlds"
     update: yes
     force: yes
@@ -64,11 +64,11 @@
 # -- mtime logic ----------------------------------------------------------
 - name: Gather repo level.dat mtimes
   stat:
-    path: "/opt/tmp_worlds/sinchon-mc/{{ world_source_subdir }}/{{ item }}/level.dat"
+    path: "{{ world_repo_dir }}/{{ world_source_subdir }}/{{ item }}/level.dat"
   loop:
-    - Sinchon
-    - Sinchon_nether
-    - Sinchon_the_end
+    - "{{ world_name }}"
+    - "{{ world_name }}_nether"
+    - "{{ world_name }}_the_end"
   register: repo_level_stats
   failed_when: false
   become_user: minecraft
@@ -77,9 +77,9 @@
   stat:
     path: "{{ world_target_dir }}/{{ item }}/level.dat"
   loop:
-    - Sinchon
-    - Sinchon_nether
-    - Sinchon_the_end
+    - "{{ world_name }}"
+    - "{{ world_name }}_nether"
+    - "{{ world_name }}_the_end"
   register: server_level_stats
   failed_when: false
 
@@ -95,7 +95,7 @@
 
 - name: Rsync worlds into minecraft dir
   ansible.posix.synchronize:
-    src: "/opt/tmp_worlds/sinchon-mc/{{ world_source_subdir }}/"
+    src: "{{ world_repo_dir }}/{{ world_source_subdir }}/"
     dest: "{{ world_target_dir }}/"
     rsync_opts: ["--checksum"]
     recursive: yes
@@ -105,27 +105,64 @@
   become_user: minecraft
   notify: restart fabric
 
-- name: Create sync script
-  copy:
-    dest: /usr/local/bin/world_git_sync.sh
-    mode: "0755"
+- name: Create log dir for minecraft
+  file:
+    path: /var/log/world_sync
+    state: directory
     owner: minecraft
     group: minecraft
+    mode: "0755"
+
+- name: Deploy world sync script with inline debug logging
+  copy:
+    dest: "/usr/local/bin/world_git_sync.sh"
+    owner: minecraft
+    group: minecraft
+    mode: "0755"
     content: |
       #!/usr/bin/env bash
-      set -euo pipefail
-      cd /opt/tmp_worlds/sinchon-mc
-      git add {{ world_source_subdir }}/Sinchon{{','}}{{ world_source_subdir }}/Sinchon_nether{{','}}{{ world_source_subdir }}/Sinchon_the_end
+      exec >> /var/log/world_sync/debug.log 2>&1
+      set -xeuo pipefail
+
+      # GitHub Deploy Key 사용
+      export GIT_SSH_COMMAND="ssh -i /home/minecraft/.ssh/id_rsa_minecraft_worlds -o StrictHostKeyChecking=no"
+
+      rsync -a --checksum --delete --exclude='.git/' "{{ world_target_dir }}/{{ world_name }}/" "{{ world_repo_dir }}/{{ world_source_subdir }}/{{ world_name }}/"
+      rsync -a --checksum --delete --exclude='.git/' "{{ world_target_dir }}/{{ world_name }}_nether/" "{{ world_repo_dir }}/{{ world_source_subdir }}/{{ world_name }}_nether/"
+      rsync -a --checksum --delete --exclude='.git/' "{{ world_target_dir }}/{{ world_name }}_the_end/" "{{ world_repo_dir }}/{{ world_source_subdir }}/{{ world_name }}_the_end/"
+
+      cd {{ world_repo_dir }}
+
+      # 대상 월드 디렉터리 스테이징
+      git add {{ world_source_subdir }}/{{ world_name }} \
+              {{ world_source_subdir }}/{{ world_name }}_nether \
+              {{ world_source_subdir }}/{{ world_name }}_the_end
+
+      # 변경 사항이 있을 때만 커밋/푸시
       if ! git diff --cached --quiet; then
-        ts=$(date +"%Y-%m-%d_%H-%M")
-        git commit -m "Auto‑backup $ts"
-        git push origin {{ world_repo_version }}
+        ts=$(date +"%Y-%m-%d_%H:%M")
+        git commit -m "Auto-backup $ts"
+        git push origin {{ world_repo_branch }}
       fi
 
 - name: Schedule daily world sync cron
-  cron:
+  cron: 
     name: "Daily world git push"
     user: minecraft
     minute: "{{ cron_sync_min }}"
     hour: "{{ cron_sync_hour }}"
-    job: "/usr/local/bin/world_git_sync.sh >> /var/log/world_git_sync.log 2>&1"
+    job: "/usr/local/bin/world_git_sync.sh >> /var/log/world_sync/sync.log 2>&1"
+
+# ➕ Git 사용자 이름/이메일 설정을 추가 (minecraft 계정 전역에 적용)
+- name: Set Git user.name and user.email for minecraft user
+  become_user: minecraft
+  block:
+    - name: Set Git user.name
+      command: git config --global user.name "Minecraft Auto Backup"
+      register: git_username_result
+      changed_when: git_username_result.rc == 0
+
+    - name: Set Git user.email
+      command: git config --global user.email "ihs20191663@gmail.com"
+      register: git_email_result
+      changed_when: git_email_result.rc == 0

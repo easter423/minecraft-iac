@@ -63,6 +63,17 @@
   loop: "{{ minecraft_server_properties | dict2items }}"
   notify: restart fabric
 
+- name: Deploy Minecraft server icon
+  copy:
+    src: icon/server-icon.png
+    dest: /opt/minecraft/server-icon.png
+    owner: minecraft
+    group: minecraft
+    mode: '0644'
+    force: yes
+  become: yes
+  notify: restart fabric
+
 # 4️⃣ Ensure directory ownership (critical) --------------------------------
 - name: Ensure /opt/minecraft recursively owned by minecraft
   file:
@@ -101,8 +112,8 @@
       Restart=on-failure
       [Install]
       WantedBy=multi-user.target
-#  when: "'fabric.service' not in ansible_facts.services or ansible_facts.services['fabric.service'].state != 'running'"
-  notify: reload systemd
+  register: fabric_svc_changed
+  notify: restart fabric
 
 # 6️⃣ Mod management -------------------------------------------------------
 - name: Ensure mods directory exists & owned by minecraft
@@ -123,7 +134,7 @@
     mode: "0644"
   loop: "{{ fabric_mods }}"
   become_user: minecraft
-  register: mods_fetched
+  notify: restart fabric
 
 - name: List existing server mods
   find:
@@ -139,12 +150,4 @@
   loop: "{{ mods_existing.files }}"
   when: "item.path | basename not in (fabric_mods | map(attribute='name') | list)"
   become_user: minecraft
-  register: mods_removed
-
-- name: Restart fabric when mods set changed
-  systemd:
-    name: fabric
-    state: restarted
-    enabled: yes
-  when: mods_fetched.changed or mods_removed.changed
-  notify: reload systemd
+  notify: restart fabric

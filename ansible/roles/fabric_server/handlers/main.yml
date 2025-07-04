@@ -1,9 +1,6 @@
-- name: reload systemd
-  ansible.builtin.systemd_service:
-    daemon_reload: yes        # pick up unit file changes :contentReference[oaicite:4]{index=4}
-
-# - name: restart fabric
-#   systemd:
-#     name: fabric
-#     state: restarted
-#     enabled: yes
+- name: restart_fabric
+  systemd_service:
+    name: fabric
+    daemon_reload: "{{ fabric_svc_changed is defined and fabric_svc_changed.changed }}"
+    state: restarted
+    enabled: yes
