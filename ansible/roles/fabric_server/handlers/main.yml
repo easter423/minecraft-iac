@@ -1,4 +1,4 @@
-- name: restart_fabric
+- name: restart fabric
   systemd_service:
     name: fabric
     daemon_reload: "{{ fabric_svc_changed is defined and fabric_svc_changed.changed }}"
