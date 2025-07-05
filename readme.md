@@ -1,7 +1,7 @@
-# Minecraft Fabric 서버 자동화
+# Minecraft Fabric 서버 자동화 v1.0.0
 
-이 저장소는 Google Cloud에서 Minecraft Fabric 서버를 손쉽게 구축하기 위한 인프라 코드 모음입니다. 
-OpenTofu를 사용해 인스턴스와 스토리지를 만들고, Ansible로 서버를 설정합니다.
+이 저장소는 Google Cloud Platform(GCP)에서 Minecraft Fabric 서버를 손쉽게 구축하기 위한 인프라 코드 모음(IaC)입니다. 
+[**OpenTofu**](https://opentofu.org/)를 사용해 인스턴스와 스토리지를 만들고, [**Ansible**](https://docs.ansible.com/)로 서버를 설정합니다.
 
 ## 1. 환경 준비
 
