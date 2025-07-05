@@ -158,11 +158,11 @@
   become_user: minecraft
   block:
     - name: Set Git user.name
-      command: git config --global user.name "Minecraft Auto Backup"
+      command: git config --global user.name "{{ git_user_name }}"
       register: git_username_result
       changed_when: git_username_result.rc == 0
 
     - name: Set Git user.email
-      command: git config --global user.email "ihs20191663@gmail.com"
+      command: git config --global user.email "{{ git_user_email }}"
       register: git_email_result
       changed_when: git_email_result.rc == 0

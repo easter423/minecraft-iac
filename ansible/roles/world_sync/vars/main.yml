@@ -6,3 +6,7 @@ world_repo_dir: "/opt/tmp_worlds/sinchon-mc"  # temporary clone dir
 world_name: "Sinchon"            # world name in server.properties
 cron_sync_hour: 5                    # KST 05:00 every day
 cron_sync_min: 0
+
+# Git configuration for auto backups
+git_user_name: "Minecraft Auto Backup"
+git_user_email: "ihs20191663@gmail.com"
