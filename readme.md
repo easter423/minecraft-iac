@@ -27,6 +27,7 @@ source ../.venv/bin/activate
 ansible-playbook -i inventory.ini site.yml
 or
 ansible-playbook -i inventory.ini -vv site.yml
+ansible-playbook -i inventory.ini status.yml
 
 =====
 https://www.notion.so/MC-2241afe72e6980da8b2ac86e0bcf270e
