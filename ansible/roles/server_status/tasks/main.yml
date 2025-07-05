@@ -41,4 +41,3 @@
 - name: Report port status
   debug:
     msg: "Port 25565 open: {{ port_status is not failed }}"
-
