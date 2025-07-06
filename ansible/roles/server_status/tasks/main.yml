@@ -1,43 +1,46 @@
 - name: Gather service facts
-  service_facts:
+  ansible.builtin.service_facts:
 
 - name: Show Fabric service status
-  debug:
+  ansible.builtin.debug:
     var: ansible_facts.services['fabric.service']
 
 - name: Show CPU load
-  command: uptime
+  ansible.builtin.command: uptime
   register: uptime_out
+  changed_when: false
 
 - name: Display load averages
-  debug:
+  ansible.builtin.debug:
     msg: "{{ uptime_out.stdout }}"
 
 - name: Show memory usage
-  command: free -m
+  ansible.builtin.command: free -m
   register: mem_out
+  changed_when: false
 
 - name: Display memory info
-  debug:
+  ansible.builtin.debug:
     var: mem_out.stdout_lines
 
 - name: Show disk usage
-  command: df -h /opt/minecraft
+  ansible.builtin.command: df -h /opt/minecraft
   register: disk_out
+  changed_when: false
 
 - name: Display disk info
-  debug:
+  ansible.builtin.debug:
     var: disk_out.stdout_lines
 
 - name: Check if port 25565 is open
-  wait_for:
+  ansible.builtin.wait_for:
     host: "{{ inventory_hostname }}"
     port: 25565
     timeout: 3
     state: started
   register: port_status
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: Report port status
-  debug:
+  ansible.builtin.debug:
     msg: "Port 25565 open: {{ port_status is not failed }}"
