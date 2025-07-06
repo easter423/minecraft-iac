@@ -37,7 +37,9 @@
    tofu init -upgrade
    tofu plan -out plan.out
    tofu apply plan.out
+   ../scripts/update_inventory.sh
    ```
+   `update_inventory.sh` 스크립트는 Terraform 출력에서 인스턴스 IP를 읽어 Ansible 인벤토리를 자동으로 작성합니다.
    기본 변수 값은 `infra/variables.tf`에서 확인할 수 있으며 필요에 따라 수정합니다.
 
 ## 3. 서버 설정(Ansible)
@@ -55,6 +57,7 @@
 
 ## 4. 추가 정보
 - 모드 목록과 서버 속성은 `ansible/vars` 하위 파일에서 관리합니다.
+- 서버 메모리 크기는 `ansible/roles/fabric_server/defaults/main.yml`의 `server_xms`, `server_xmx` 변수로 조정할 수 있습니다.
 - 자세한 과정은 [Notion 문서](https://www.notion.so/MC-2241afe72e6980da8b2ac86e0bcf270e)를 참고하실 수 있습니다.
 
 

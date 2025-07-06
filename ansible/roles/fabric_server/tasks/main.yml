@@ -18,9 +18,9 @@
     name: "Asia/Seoul"
 
 # 3️⃣ Fabric installer download -------------------------------------------
-- name: Download Fabric installer {{ fabric_installer_ver }} (as minecraft)
+- name: Download Fabric installer {{ fabric_installer_version }} (as minecraft)
   get_url:
-    url: https://maven.fabricmc.net/net/fabricmc/fabric-installer/{{ fabric_installer_ver }}/fabric-installer-{{ fabric_installer_ver }}.jar
+    url: https://maven.fabricmc.net/net/fabricmc/fabric-installer/{{ fabric_installer_version }}/fabric-installer-{{ fabric_installer_version }}.jar
     dest: /opt/minecraft/fabric-installer.jar
     mode: "0755"
     checksum: "sha256:38aa82ab1ef829b7aa3f2143fcc93bba706a8e18835be731d0fdf231d274b07f"
@@ -100,7 +100,7 @@
       [Service]
       User=minecraft
       WorkingDirectory=/opt/minecraft
-      ExecStart=/usr/bin/java -Xms6G -Xmx6G \
+      ExecStart=/usr/bin/java -Xms{{ server_xms }} -Xmx{{ server_xmx }} \
         -XX:+UseG1GC -XX:+ParallelRefProcEnabled -XX:MaxGCPauseMillis=200 \
         -XX:+UnlockExperimentalVMOptions -XX:+DisableExplicitGC -XX:+AlwaysPreTouch \
         -XX:G1NewSizePercent=30 -XX:G1MaxNewSizePercent=40 -XX:G1HeapRegionSize=8M \

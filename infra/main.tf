@@ -29,7 +29,7 @@ resource "google_compute_instance" "minecraft_instance" {
 
   metadata = {
     enable-osconfig = "TRUE"
-    ssh-keys = var.ssh_public_keys
+    ssh-keys        = var.ssh_public_keys
   }
 
   name = var.instance_name
@@ -68,13 +68,13 @@ resource "google_compute_instance" "minecraft_instance" {
 }
 
 module "ops_agent_policy" {
-  source          = "github.com/terraform-google-modules/terraform-google-cloud-operations/modules/ops-agent-policy"
-  project         = var.project_id
-  zone            = var.zone
-  assignment_id   = "goog-ops-agent-v2-x86-template-1-4-0-${var.zone}"
+  source        = "github.com/terraform-google-modules/terraform-google-cloud-operations/modules/ops-agent-policy"
+  project       = var.project_id
+  zone          = var.zone
+  assignment_id = "goog-ops-agent-v2-x86-template-1-4-0-${var.zone}"
   agents_rule = {
     package_state = "installed"
-    version = "latest"
+    version       = "latest"
   }
   instance_filter = {
     all = false
@@ -84,4 +84,9 @@ module "ops_agent_policy" {
       }
     }]
   }
+}
+
+output "instance_ip" {
+  description = "Public IP address of the created instance"
+  value       = google_compute_instance.instance-20250702-074431.network_interface[0].access_config[0].nat_ip
 }
