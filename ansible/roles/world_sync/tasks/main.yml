@@ -29,11 +29,13 @@
   register: key_stat
 
 - name: Generate deploy key for GitHub (first time only)
-  ansible.builtin.command:
-    cmd: ssh-keygen -t rsa -b 4096 -f /home/minecraft/.ssh/id_rsa_minecraft_worlds -N '' -C ''
-    creates: /home/minecraft/.ssh/id_rsa_minecraft_worlds
-  become_user: minecraft
-  become: true
+  community.crypto.openssh_keypair:
+    path: /home/minecraft/.ssh/id_rsa_minecraft_worlds
+    type: rsa
+    size: 4096
+    owner: minecraft
+    group: minecraft
+    mode: "0600"
   when: not key_stat.stat.exists
   register: github_key
 
@@ -105,15 +107,17 @@
       {{ server_world_missing or (repo_max_mtime > server_max_mtime) }}
 
 - name: Rsync worlds into minecraft dir
-  ansible.builtin.command:
-    cmd: >-
-      rsync -a --checksum "{{ world_repo_dir }}/{{ world_source_subdir }}/" "{{ world_target_dir }}/"
-  changed_when: false
+  ansible.posix.synchronize:
+    src: "{{ world_repo_dir }}/{{ world_source_subdir }}/"
+    dest: "{{ world_target_dir }}/"
+    rsync_opts: ["--checksum"]
+    recursive: true
+    delete: false   # do not delete server‑side worlds that are not in repo
   when: do_world_sync
   delegate_to: "{{ inventory_hostname }}"  # run rsync locally on target node
   become_user: minecraft
   become: true
-  notify: restart fabric
+  notify: Restart fabric
 
 - name: Create log dir for minecraft
   ansible.builtin.file:
@@ -137,9 +141,17 @@
       # GitHub Deploy Key 사용
       export GIT_SSH_COMMAND="ssh -i /home/minecraft/.ssh/id_rsa_minecraft_worlds -o StrictHostKeyChecking=no"
 
-      rsync -a --checksum --delete --exclude='.git/' "{{ world_target_dir }}/{{ world_name }}/" "{{ world_repo_dir }}/{{ world_source_subdir }}/{{ world_name }}/"
-      rsync -a --checksum --delete --exclude='.git/' "{{ world_target_dir }}/{{ world_name }}_nether/" "{{ world_repo_dir }}/{{ world_source_subdir }}/{{ world_name }}_nether/"
-      rsync -a --checksum --delete --exclude='.git/' "{{ world_target_dir }}/{{ world_name }}_the_end/" "{{ world_repo_dir }}/{{ world_source_subdir }}/{{ world_name }}_the_end/"
+      rsync -a --checksum --delete --exclude='.git/' \
+        "{{ world_target_dir }}/{{ world_name }}/" \
+        "{{ world_repo_dir }}/{{ world_source_subdir }}/{{ world_name }}/"
+
+      rsync -a --checksum --delete --exclude='.git/' \
+        "{{ world_target_dir }}/{{ world_name }}_nether/" \
+        "{{ world_repo_dir }}/{{ world_source_subdir }}/{{ world_name }}_nether/"
+
+      rsync -a --checksum --delete --exclude='.git/' \
+        "{{ world_target_dir }}/{{ world_name }}_the_end/" \
+        "{{ world_repo_dir }}/{{ world_source_subdir }}/{{ world_name }}_the_end/"
 
       cd {{ world_repo_dir }}
 
@@ -167,12 +179,14 @@
 - name: Set Git user.name and user.email for minecraft user
   become_user: minecraft
   become: true
-  ansible.builtin.copy:
-    dest: /home/minecraft/.gitconfig
-    owner: minecraft
-    group: minecraft
-    mode: "0644"
-    content: |
-      [user]
-      name = {{ git_user_name }}
-      email = {{ git_user_email }}
+  block:
+    - name: Set Git user.name
+      community.general.git_config:
+        name: user.name
+        value: "{{ git_user_name }}"
+        scope: global
+    - name: Set Git user.email
+      community.general.git_config:
+        name: user.email
+        value: "{{ git_user_email }}"
+        scope: global

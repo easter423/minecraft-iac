@@ -11,10 +11,11 @@
     name: acl
     state: present
     update_cache: true
+
 # 2️⃣ System timezone ------------------------------------------------------
 - name: Set timezone Asia/Seoul
-  ansible.builtin.command: timedatectl set-timezone Asia/Seoul
-  changed_when: true
+  community.general.timezone:
+    name: "Asia/Seoul"
 
 # 3️⃣ Fabric installer download -------------------------------------------
 - name: "Download Fabric installer (as minecraft) {{ fabric_installer_version }}"
@@ -64,7 +65,7 @@
     group: minecraft
     mode: "0644"
   loop: "{{ minecraft_server_properties | dict2items }}"
-  notify: restart fabric
+  notify: Restart fabric
 
 - name: Deploy Minecraft server icon
   ansible.builtin.copy:
@@ -75,7 +76,7 @@
     mode: '0644'
     force: true
   become: true
-  notify: restart fabric
+  notify: Restart fabric
 
 # 4️⃣ Ensure directory ownership (critical) --------------------------------
 - name: Ensure /opt/minecraft recursively owned by minecraft
@@ -116,7 +117,7 @@
       [Install]
       WantedBy=multi-user.target
   register: fabric_svc_changed
-  notify: restart fabric
+  notify: Restart fabric
 
 # 6️⃣ Mod management -------------------------------------------------------
 - name: Ensure mods directory exists & owned by minecraft
@@ -138,7 +139,7 @@
   loop: "{{ fabric_mods }}"
   become_user: minecraft
   become: true
-  notify: restart fabric
+  notify: Restart fabric
 
 - name: List existing server mods
   ansible.builtin.find:
@@ -156,4 +157,4 @@
   when: "item.path | basename not in (fabric_mods | map(attribute='name') | list)"
   become_user: minecraft
   become: true
-  notify: restart fabric
+  notify: Restart fabric

@@ -30,7 +30,7 @@
     dest: "/tmp/node_exporter-{{ node_exporter_version }}.tar.gz"
     mode: "0644"
     checksum: "sha256:{{ node_exporter_checksum }}"
-  notify: extract node_exporter
+  notify: Extract node_exporter
 
 - name: Create systemd service
   ansible.builtin.copy:
@@ -50,4 +50,4 @@
 
       [Install]
       WantedBy=multi-user.target
-  notify: restart node_exporter
+  notify: Restart node_exporter
