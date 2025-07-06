@@ -1,5 +1,5 @@
 - name: Install OpenJDK 21
-  apt:
+  ansible.builtin.apt:
     name: openjdk-21-jdk-headless
     state: present
-    update_cache: yes
+    update_cache: true

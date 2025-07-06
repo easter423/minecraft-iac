@@ -1,5 +1,6 @@
-- hosts: minecraft
-  become: yes
+- name: Manage Minecraft server
+  hosts: minecraft
+  become: true
   vars_files:
     - vars/versions.yml # Contains afabric_mc_version, afabric_loader_version
     - vars/mods.yml # Contains fabric_mods

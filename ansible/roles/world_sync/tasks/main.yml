@@ -1,6 +1,6 @@
 # 7️⃣ World repo clone & sync ---------------------------------------------
 - name: Ensure tmp clone dir exists
-  file:
+  ansible.builtin.file:
     path: "/opt/tmp_worlds"
     state: directory
     owner: minecraft
@@ -8,7 +8,7 @@
     mode: "0755"
 
 - name: Ensure .ssh directory exists
-  file:
+  ansible.builtin.file:
     path: /home/minecraft/.ssh
     state: directory
     owner: minecraft
@@ -16,7 +16,7 @@
     mode: "0700"
 
 - name: Add GitHub.com to known_hosts
-  known_hosts:
+  ansible.builtin.known_hosts:
     path: /home/minecraft/.ssh/known_hosts
     name: github.com
     key: "{{ lookup('pipe', 'ssh-keyscan -t rsa github.com') }}"
@@ -24,23 +24,21 @@
     hash_host: false
 
 - name: Check if deploy key already exists
-  stat:
+  ansible.builtin.stat:
     path: /home/minecraft/.ssh/id_rsa_minecraft_worlds.pub
   register: key_stat
 
 - name: Generate deploy key for GitHub (first time only)
-  openssh_keypair:
-    path: /home/minecraft/.ssh/id_rsa_minecraft_worlds
-    type: rsa
-    size: 4096
-    owner: minecraft
-    group: minecraft
-    mode: '0600'
+  ansible.builtin.command:
+    cmd: ssh-keygen -t rsa -b 4096 -f /home/minecraft/.ssh/id_rsa_minecraft_worlds -N '' -C ''
+    creates: /home/minecraft/.ssh/id_rsa_minecraft_worlds
+  become_user: minecraft
+  become: true
   when: not key_stat.stat.exists
   register: github_key
 
 - name: Show GitHub deploy key instructions (if new key)
-  debug:
+  ansible.builtin.debug:
     msg: |
       A new SSH deploy key has been generated for the Minecraft server.
 
@@ -51,19 +49,20 @@
   when: github_key.changed or not key_stat.stat.exists
 
 - name: Clone or pull world repository
-  git:
+  ansible.builtin.git:
     repo: "{{ world_repo }}"
     dest: "{{ world_repo_dir }}"
     version: "{{ world_repo_branch | default('main') }}"
     key_file: "/home/minecraft/.ssh/id_rsa_minecraft_worlds"
-    update: yes
-    force: yes
+    update: true
+    force: true
     accept_hostkey: true
   become_user: minecraft
+  become: true
 
 # -- mtime logic ----------------------------------------------------------
 - name: Gather repo level.dat mtimes
-  stat:
+  ansible.builtin.stat:
     path: "{{ world_repo_dir }}/{{ world_source_subdir }}/{{ item }}/level.dat"
   loop:
     - "{{ world_name }}"
@@ -72,9 +71,10 @@
   register: repo_level_stats
   failed_when: false
   become_user: minecraft
+  become: true
 
 - name: Gather server level.dat mtimes
-  stat:
+  ansible.builtin.stat:
     path: "{{ world_target_dir }}/{{ item }}/level.dat"
   loop:
     - "{{ world_name }}"
@@ -82,31 +82,41 @@
     - "{{ world_name }}_the_end"
   register: server_level_stats
   failed_when: false
+  become_user: minecraft
+  become: true
 
 - name: Compute sync requirement
-  set_fact:
-    server_world_missing: "{{ (repo_level_stats.results | zip(server_level_stats.results) | selectattr('0.stat.exists') | selectattr('1.stat.exists', 'equalto', False) | list | length) > 0 }}"
-    repo_max_mtime: "{{ (repo_level_stats.results | selectattr('stat.exists') | map(attribute='stat.mtime') | list | default([0]) | max) | float }}"
-    server_max_mtime: "{{ (server_level_stats.results | selectattr('stat.exists') | map(attribute='stat.mtime') | list | default([0]) | max) | float }}"
+  ansible.builtin.set_fact:
+    server_world_missing: >-
+      {{ (repo_level_stats.results | zip(server_level_stats.results)
+         | selectattr('0.stat.exists')
+         | selectattr('1.stat.exists', 'equalto', False)
+         | list | length) > 0 }}
+    repo_max_mtime: >-
+      {{ (repo_level_stats.results | selectattr('stat.exists')
+         | map(attribute='stat.mtime') | list | default([0]) | max) | float }}
+    server_max_mtime: >-
+      {{ (server_level_stats.results | selectattr('stat.exists')
+         | map(attribute='stat.mtime') | list | default([0]) | max) | float }}
 
 - name: Determine if world sync is needed
-  set_fact:
-    do_world_sync: "{{ server_world_missing or (repo_max_mtime > server_max_mtime) }}"
+  ansible.builtin.set_fact:
+    do_world_sync: >-
+      {{ server_world_missing or (repo_max_mtime > server_max_mtime) }}
 
 - name: Rsync worlds into minecraft dir
-  ansible.posix.synchronize:
-    src: "{{ world_repo_dir }}/{{ world_source_subdir }}/"
-    dest: "{{ world_target_dir }}/"
-    rsync_opts: ["--checksum"]
-    recursive: yes
-    delete: no   # do not delete server‑side worlds that are not in repo
+  ansible.builtin.command:
+    cmd: >-
+      rsync -a --checksum "{{ world_repo_dir }}/{{ world_source_subdir }}/" "{{ world_target_dir }}/"
+  changed_when: false
   when: do_world_sync
   delegate_to: "{{ inventory_hostname }}"  # run rsync locally on target node
   become_user: minecraft
+  become: true
   notify: restart fabric
 
 - name: Create log dir for minecraft
-  file:
+  ansible.builtin.file:
     path: /var/log/world_sync
     state: directory
     owner: minecraft
@@ -114,7 +124,7 @@
     mode: "0755"
 
 - name: Deploy world sync script with inline debug logging
-  copy:
+  ansible.builtin.copy:
     dest: "/usr/local/bin/world_git_sync.sh"
     owner: minecraft
     group: minecraft
@@ -146,7 +156,7 @@
       fi
 
 - name: Schedule daily world sync cron
-  cron: 
+  ansible.builtin.cron:
     name: "Daily world git push"
     user: minecraft
     minute: "{{ cron_sync_min }}"
@@ -156,14 +166,13 @@
 # ➕ Git 사용자 이름/이메일 설정을 추가 (minecraft 계정 전역에 적용)
 - name: Set Git user.name and user.email for minecraft user
   become_user: minecraft
-  block:
-    - name: Set Git user.name
-      git_config:
-        name: user.name
-        value: "{{ git_user_name }}"
-        scope: global
-    - name: Set Git user.email
-      git_config:
-        name: user.email
-        value: "{{ git_user_email }}"
-        scope: global
+  become: true
+  ansible.builtin.copy:
+    dest: /home/minecraft/.gitconfig
+    owner: minecraft
+    group: minecraft
+    mode: "0644"
+    content: |
+      [user]
+      name = {{ git_user_name }}
+      email = {{ git_user_email }}

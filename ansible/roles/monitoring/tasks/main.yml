@@ -1,42 +1,43 @@
-- name: Ensure node_exporter group & user
-  group: name=node_exporter system=yes
-- user:
+- name: Ensure node_exporter group
+  ansible.builtin.group:
+    name: node_exporter
+    system: true
+
+- name: Ensure node_exporter user
+  ansible.builtin.user:
     name: node_exporter
     group: node_exporter
     shell: /usr/sbin/nologin
-    system: yes
+    system: true
 
 - name: Download node_exporter checksum file
-  uri:
+  ansible.builtin.uri:
     url: "https://github.com/prometheus/node_exporter/releases/download/v{{ node_exporter_version }}/sha256sums.txt"
-    return_content: yes
+    return_content: true
   register: node_exporter_checksum_file
 
 - name: Parse node_exporter checksum
-  set_fact:
-    node_exporter_checksum: "{{ (node_exporter_checksum_file.content.splitlines() | select('search', 'node_exporter-' ~ node_exporter_version ~ '.linux-amd64.tar.gz') | list | first).split()[0] }}"
+  ansible.builtin.set_fact:
+    node_exporter_checksum: >-
+      {{ (node_exporter_checksum_file.content.splitlines() |
+         select('search', 'node_exporter-' ~ node_exporter_version ~ '.linux-amd64.tar.gz') |
+         list | first).split()[0] }}
 
-- name: Download node_exporter {{ node_exporter_version }} tar.gz
-  get_url:
-    url: "https://github.com/prometheus/node_exporter/releases/download/v{{ node_exporter_version }}/node_exporter-{{ node_exporter_version }}.linux-amd64.tar.gz"
+- name: Download node_exporter tar.gz {{ node_exporter_version }}
+  ansible.builtin.get_url:
+    url: >-
+      https://github.com/prometheus/node_exporter/releases/download/v{{ node_exporter_version }}/node_exporter-{{ node_exporter_version }}.linux-amd64.tar.gz
     dest: "/tmp/node_exporter-{{ node_exporter_version }}.tar.gz"
     mode: "0644"
-    checksum: "sha256:{{ node_exporter_checksum }}"   # ✔ 무결성 검증
-  register: dl_node
-
-- name: Unpack binary
-  unarchive:
-    src: "/tmp/node_exporter-{{ node_exporter_version }}.tar.gz"
-    dest: /usr/local/bin/
-    remote_src: yes
-    creates: /usr/local/bin/node_exporter
-    extra_opts:
-      - --strip-components=1        # 디렉터리 계층 제거
-  when: dl_node.changed            # 처음 다운로드 했을 때만
+    checksum: "sha256:{{ node_exporter_checksum }}"
+  notify: extract node_exporter
 
 - name: Create systemd service
-  copy:
+  ansible.builtin.copy:
     dest: /etc/systemd/system/node_exporter.service
+    owner: root
+    group: root
+    mode: "0644"
     content: |
       [Unit]
       Description=Prometheus Node Exporter
@@ -50,5 +51,3 @@
       [Install]
       WantedBy=multi-user.target
   notify: restart node_exporter
-
-# - meta: flush_handlers   # 즉시 핸들러 실행
