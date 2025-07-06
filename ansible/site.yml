@@ -4,6 +4,7 @@
     - vars/versions.yml # Contains afabric_mc_version, afabric_loader_version
     - vars/mods.yml # Contains fabric_mods
     - vars/server_properties.yml # Contains minecraft_server_properties
+    - vars/world_sync.yml # Contains world_sync_config
   roles:
     - java21
     - fabric_server
