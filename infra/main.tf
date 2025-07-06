@@ -88,5 +88,5 @@ module "ops_agent_policy" {
 
 output "instance_ip" {
   description = "Public IP address of the created instance"
-  value       = google_compute_instance.instance-20250702-074431.network_interface[0].access_config[0].nat_ip
+  value       = google_compute_instance.minecraft_instance.network_interface[0].access_config[0].nat_ip
 }
