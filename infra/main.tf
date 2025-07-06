@@ -1,14 +1,15 @@
-# 이 코드는 Terraform 4.25.0 및 4.25.0과(와) 하위 호환되는 버전과 호환됩니다.
-# 이 Terraform 코드를 검증하는 방법은 https://developer.hashicorp.com/terraform/tutorials/gcp-get-started/google-cloud-platform-build#format-and-validate-the-configuration을 참조하세요.
+# This configuration is compatible with Terraform version 4.25.0 and all earlier supported versions.
+# For instructions on validating this Terraform code, please refer to the “Format and Validate the Configuration” tutorial here:
+# https://developer.hashicorp.com/terraform/tutorials/gcp-get-started/google-cloud-platform-build#format-and-validate-the-configuration
 
-resource "google_compute_instance" "instance-20250702-074431" {
+resource "google_compute_instance" "minecraft_instance" {
   boot_disk {
     auto_delete = true
     device_name = "instance-mc-server"
 
     initialize_params {
-      image = "projects/ubuntu-os-cloud/global/images/ubuntu-2404-noble-amd64-v20250628"
-      size  = 50
+      image = var.boot_image
+      size  = var.boot_disk_size
       type  = "pd-ssd"
     }
 
@@ -24,18 +25,18 @@ resource "google_compute_instance" "instance-20250702-074431" {
     goog-ops-agent-policy = "v2-x86-template-1-4-0"
   }
 
-  machine_type = "n2-custom-2-10240"
+  machine_type = var.machine_type
 
   metadata = {
     enable-osconfig = "TRUE"
-    ssh-keys        = "${var.ssh_public_keys}"
+    ssh-keys        = var.ssh_public_keys
   }
 
-  name = "instance-20250702-074431"
+  name = var.instance_name
 
   network_interface {
     access_config {
-      nat_ip       = "34.22.89.91"
+        nat_ip       = var.nat_ip
       network_tier = "PREMIUM"
     }
 
@@ -52,7 +53,7 @@ resource "google_compute_instance" "instance-20250702-074431" {
   }
 
   service_account {
-    email  = "686021559130-compute@developer.gserviceaccount.com"
+    email  = var.service_account_email
     scopes = ["https://www.googleapis.com/auth/devstorage.read_only", "https://www.googleapis.com/auth/logging.write", "https://www.googleapis.com/auth/monitoring.write", "https://www.googleapis.com/auth/service.management.readonly", "https://www.googleapis.com/auth/servicecontrol", "https://www.googleapis.com/auth/trace.append"]
   }
 
