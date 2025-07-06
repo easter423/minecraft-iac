@@ -57,6 +57,8 @@
 
 ## 4. 추가 정보
 - 모드 목록과 서버 속성은 `ansible/vars` 하위 파일에서 관리합니다.
+- `scripts/update_mods.py`를 실행하면 `mods_source.yml`에 정의된 슬러그 목록을
+  기준으로 최신 모드를 자동 다운로드해 `mods.yml`을 갱신합니다.
 - 서버 메모리 크기는 `ansible/roles/fabric_server/defaults/main.yml`의 `server_xms`, `server_xmx` 변수로 조정할 수 있습니다.
 - 자세한 과정은 [Notion 문서](https://www.notion.so/MC-2241afe72e6980da8b2ac86e0bcf270e)를 참고하실 수 있습니다.
 
