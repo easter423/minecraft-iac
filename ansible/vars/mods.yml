@@ -1,72 +1,67 @@
 fabric_mods:
-  - name: fabric-api.jar
-    url: https://cdn.modrinth.com/data/P7dR8mSH/versions/aQqNHHfZ/fabric-api-0.128.1%2B1.21.5.jar
-    checksum: "sha256:a660c241ecc49cb9ee5d4a1efcb03d134b4169e90a4da0b11afe0a8872f5486c"
-  - name: cloth-config.jar
-    url: https://cdn.modrinth.com/data/9s6osm5g/versions/qA00xo1O/cloth-config-18.0.145-fabric.jar
-    checksum: "sha256:ec67012761aee86c140a910358c49ddbc24b852e980707940705721e1bff5e7f"
-  - name: yet_another_config_lib.jar
-    url: https://cdn.modrinth.com/data/1eAoo2KR/versions/Fp5lATXW/yet_another_config_lib_v3-3.7.1%2B1.21.5-fabric.jar
-    checksum: "sha256:56dd3d9906a9df0227b904f472b993595b0587dfa6731f8af9ce2139ea4927a0"
-  - name: architectury.jar
-    url: https://cdn.modrinth.com/data/lhGA9TYQ/versions/ImZUcNzP/architectury-16.1.4-fabric.jar
-    checksum: "sha256:a9d53c7c4f6aa3329c27f2b882b9cae9e38706fd6b61cc922e4b8529e8ab031b"
-  - name: fabric-language-kotlin.jar
-    url: https://cdn.modrinth.com/data/Ha28R6CL/versions/mccDBWqV/fabric-language-kotlin-1.13.4%2Bkotlin.2.2.0.jar
-    checksum: "sha256:2a3c56fc1dd6e922a9bee35a4c0ba4bc0d967763f2e952ff49b74ec3c641f50b"
-  - name: spark.jar
-    url: https://cdn.modrinth.com/data/l6YH9Als/versions/65SnrRgF/spark-1.10.138-fabric.jar
-    checksum: "sha256:1e25b3ca4b7278ff3fdc4f7baa5692d30c2ac8be80b7eae9e1c4edb09f74b753"
-  - name: lithium.jar
-    url: https://cdn.modrinth.com/data/gvQqBUqZ/versions/xcELvp6R/lithium-fabric-0.16.3%2Bmc1.21.5.jar
-    checksum: "sha256:6661b5a50fbc85c60328c68bab7361c3af6685b482f3b324dc10dbbdcf64e06d"
-  - name: krypton.jar
-    url: https://cdn.modrinth.com/data/fQEb0iXm/versions/neW85eWt/krypton-0.2.9.jar
-    checksum: "sha256:b866226be1f60cf6b0650c41bb193becf30a7ec37c184519a37175cd9dcc63aa"
-  - name: collective.jar
-    url: https://cdn.modrinth.com/data/e0M1UDsY/versions/aCWSF57s/collective-1.21.5-8.3.jar
-    checksum: "sha256:4fdf70ce4e2ef94e6894cde6edc22ca493c738b90d019c1c849c5a2d20d5d868"
-  - name: ferritecore.jar
-    url: https://cdn.modrinth.com/data/uXXizFIs/versions/CtMpt7Jr/ferritecore-8.0.0-fabric.jar
-    checksum: "sha256:2b90bf00c2a5808c3c539712a55691191f8716d5bfa6eefaba35e9c4c5a28eea"
-  - name: fabricexporter.jar
-    url: https://cdn.modrinth.com/data/dbVXHSlv/versions/yXykpcdV/fabricexporter-1.0.14.jar
-    checksum: "sha256:011f3730258357b9208942c9957448b4746a967abeb586e8c90417641a0f5a36"
-  - name: ServerReplay.jar
-    url: https://cdn.modrinth.com/data/qCvSZ8ra/versions/FOwSctrZ/ServerReplay-2.3.0%2Bmc1.21.5.jar
-    checksum: "sha256:9bc1cc7b53ffae36f816ade665ef792ed2e7777c558fcde24e011d45b06fb947"
-  - name: voicechat.jar
-    url: https://cdn.modrinth.com/data/9eGKb6K1/versions/suJqF5xU/voicechat-fabric-1.21.5-2.5.30.jar
-    checksum: "sha256:7e7e60b49100e9e036b77629313fbf986c2e2ed2cb39fd8e58b352ed0234af36"
-#  - name: ViaFabric.jar
-#    url: https://cdn.modrinth.com/data/YlKdE5VK/versions/n9T0mzox/ViaFabric-0.4.18%2B104-main.jar
-#    checksum: "sha256:8cdd23bd7d3f026483325f7cc2129ba231509a557fb6aa4993446e29e3e0e793"
-  - name: appleskin.jar
-    url: https://cdn.modrinth.com/data/EsAfCjCV/versions/VfjnbBAT/appleskin-fabric-mc1.21.5-3.0.6.jar
-    checksum: "sha256:e6fe03339204f887e295701998df4b116f92ea183394156467670ab1aaf6efb3"
-  - name: DistantHorizons.jar
-    url: https://cdn.modrinth.com/data/uCdwusMi/versions/Mt9bDAs6/DistantHorizons-neoforge-fabric-2.3.2-b-1.21.5.jar
-    checksum: "sha256:1c98b1a02573fd7b3dbe477a8e16bec14c46883a93ec5d1e424bca018e3ec84b"
-  - name: noisium.jar
-    url: https://cdn.modrinth.com/data/KuNKN7d2/versions/sUh67T4Y/noisium-fabric-2.6.0%2Bmc1.21.5.jar
-    checksum: "sha256:15a1f3938e1f87f6b28611dd18f8913b4bf335ca00585bfda3c23451632d814d"
-  - name: doubledoors.jar
-    url: https://cdn.modrinth.com/data/JrvR9OHr/versions/1gYbfoqD/doubledoors-1.21.5-7.0.jar
-    checksum: "sha256:15d6ed5bfc687be0ab291181e7cbf22053c69c2643db6deb2a6af3951eec4d57"
-  - name: Chunky.jar
-    url: https://cdn.modrinth.com/data/fALzjamp/versions/mhLtMoLk/Chunky-Fabric-1.4.36.jar
-    checksum: "sha256:bcbb6daef05ebe26b0be1324d9972337929e713e10cbea2ce0512a30f601efb5"
-  - name: Clumps.jar
-    url: https://cdn.modrinth.com/data/Wnxd13zP/versions/nH8YfRWs/Clumps-fabric-1.21.5-23.0.0.1.jar
-    checksum: "sha256:e9daefb44cc705dae364148853ef93944e382b52bb509bc7d9bbc4583ed2eb7b"
-  - name: LuckPerms.jar
-    url: https://cdn.modrinth.com/data/Vebnzrzj/versions/sq8a8S4D/LuckPerms-Fabric-5.5.4.jar
-    checksum: "sha256:9ab05e409c901bbf1f2b6cfd8ba6a754c2c2c2353207debe134e394b5d8f2066"
-  - name: TAB.jar
-    url: https://cdn.modrinth.com/data/gG7VFbG0/versions/ahTabLeS/TAB%20v5.2.1.jar
-    checksum: "sha256:05af92eececf7d037f5ea669a8c63c6dbcb1baffb5b22d1eb18a1a77894cb119"
-  - name: bluemap.jar
-    url: https://cdn.modrinth.com/data/swbUV1cr/versions/Dr2hvJBc/bluemap-5.7-fabric.jar
-    checksum: "sha256:67e7bd3037507c04ecfab8543222ad87552a81db85940c3c9935b2c517422fc4"
-  
-# ➕ Add more mods here as needed
+- checksum: sha256:a660c241ecc49cb9ee5d4a1efcb03d134b4169e90a4da0b11afe0a8872f5486c
+  name: fabric-api-0.128.1+1.21.5.jar
+  url: https://cdn.modrinth.com/data/P7dR8mSH/versions/aQqNHHfZ/fabric-api-0.128.1%2B1.21.5.jar
+- checksum: sha256:ec67012761aee86c140a910358c49ddbc24b852e980707940705721e1bff5e7f
+  name: cloth-config-18.0.145-fabric.jar
+  url: https://cdn.modrinth.com/data/9s6osm5g/versions/qA00xo1O/cloth-config-18.0.145-fabric.jar
+- checksum: sha256:56dd3d9906a9df0227b904f472b993595b0587dfa6731f8af9ce2139ea4927a0
+  name: yet_another_config_lib_v3-3.7.1+1.21.5-fabric.jar
+  url: https://cdn.modrinth.com/data/1eAoo2KR/versions/Fp5lATXW/yet_another_config_lib_v3-3.7.1%2B1.21.5-fabric.jar
+- checksum: sha256:a9d53c7c4f6aa3329c27f2b882b9cae9e38706fd6b61cc922e4b8529e8ab031b
+  name: architectury-16.1.4-fabric.jar
+  url: https://cdn.modrinth.com/data/lhGA9TYQ/versions/ImZUcNzP/architectury-16.1.4-fabric.jar
+- checksum: sha256:2a3c56fc1dd6e922a9bee35a4c0ba4bc0d967763f2e952ff49b74ec3c641f50b
+  name: fabric-language-kotlin-1.13.4+kotlin.2.2.0.jar
+  url: https://cdn.modrinth.com/data/Ha28R6CL/versions/mccDBWqV/fabric-language-kotlin-1.13.4%2Bkotlin.2.2.0.jar
+- checksum: sha256:1e25b3ca4b7278ff3fdc4f7baa5692d30c2ac8be80b7eae9e1c4edb09f74b753
+  name: spark-1.10.138-fabric.jar
+  url: https://cdn.modrinth.com/data/l6YH9Als/versions/65SnrRgF/spark-1.10.138-fabric.jar
+- checksum: sha256:6661b5a50fbc85c60328c68bab7361c3af6685b482f3b324dc10dbbdcf64e06d
+  name: lithium-fabric-0.16.3+mc1.21.5.jar
+  url: https://cdn.modrinth.com/data/gvQqBUqZ/versions/xcELvp6R/lithium-fabric-0.16.3%2Bmc1.21.5.jar
+- checksum: sha256:b866226be1f60cf6b0650c41bb193becf30a7ec37c184519a37175cd9dcc63aa
+  name: krypton-0.2.9.jar
+  url: https://cdn.modrinth.com/data/fQEb0iXm/versions/neW85eWt/krypton-0.2.9.jar
+- checksum: sha256:4fdf70ce4e2ef94e6894cde6edc22ca493c738b90d019c1c849c5a2d20d5d868
+  name: collective-1.21.5-8.3.jar
+  url: https://cdn.modrinth.com/data/e0M1UDsY/versions/aCWSF57s/collective-1.21.5-8.3.jar
+- checksum: sha256:2b90bf00c2a5808c3c539712a55691191f8716d5bfa6eefaba35e9c4c5a28eea
+  name: ferritecore-8.0.0-fabric.jar
+  url: https://cdn.modrinth.com/data/uXXizFIs/versions/CtMpt7Jr/ferritecore-8.0.0-fabric.jar
+- checksum: sha256:011f3730258357b9208942c9957448b4746a967abeb586e8c90417641a0f5a36
+  name: fabricexporter-1.0.14.jar
+  url: https://cdn.modrinth.com/data/dbVXHSlv/versions/yXykpcdV/fabricexporter-1.0.14.jar
+- checksum: sha256:9bc1cc7b53ffae36f816ade665ef792ed2e7777c558fcde24e011d45b06fb947
+  name: ServerReplay-2.3.0+mc1.21.5.jar
+  url: https://cdn.modrinth.com/data/qCvSZ8ra/versions/FOwSctrZ/ServerReplay-2.3.0%2Bmc1.21.5.jar
+- checksum: sha256:2636f7974ef274f5cfada27fc0c5d19c30b22256d929faa62d7638dbc46f2a91
+  name: voicechat-fabric-1.21.5-2.5.33.jar
+  url: https://cdn.modrinth.com/data/9eGKb6K1/versions/ofVyDayP/voicechat-fabric-1.21.5-2.5.33.jar
+- checksum: sha256:e6fe03339204f887e295701998df4b116f92ea183394156467670ab1aaf6efb3
+  name: appleskin-fabric-mc1.21.5-3.0.6.jar
+  url: https://cdn.modrinth.com/data/EsAfCjCV/versions/VfjnbBAT/appleskin-fabric-mc1.21.5-3.0.6.jar
+- checksum: sha256:1c98b1a02573fd7b3dbe477a8e16bec14c46883a93ec5d1e424bca018e3ec84b
+  name: DistantHorizons-neoforge-fabric-2.3.2-b-1.21.5.jar
+  url: https://cdn.modrinth.com/data/uCdwusMi/versions/Mt9bDAs6/DistantHorizons-neoforge-fabric-2.3.2-b-1.21.5.jar
+- checksum: sha256:15a1f3938e1f87f6b28611dd18f8913b4bf335ca00585bfda3c23451632d814d
+  name: noisium-fabric-2.6.0+mc1.21.5.jar
+  url: https://cdn.modrinth.com/data/KuNKN7d2/versions/sUh67T4Y/noisium-fabric-2.6.0%2Bmc1.21.5.jar
+- checksum: sha256:15d6ed5bfc687be0ab291181e7cbf22053c69c2643db6deb2a6af3951eec4d57
+  name: doubledoors-1.21.5-7.0.jar
+  url: https://cdn.modrinth.com/data/JrvR9OHr/versions/1gYbfoqD/doubledoors-1.21.5-7.0.jar
+- checksum: sha256:bcbb6daef05ebe26b0be1324d9972337929e713e10cbea2ce0512a30f601efb5
+  name: Chunky-Fabric-1.4.36.jar
+  url: https://cdn.modrinth.com/data/fALzjamp/versions/mhLtMoLk/Chunky-Fabric-1.4.36.jar
+- checksum: sha256:e9daefb44cc705dae364148853ef93944e382b52bb509bc7d9bbc4583ed2eb7b
+  name: Clumps-fabric-1.21.5-23.0.0.1.jar
+  url: https://cdn.modrinth.com/data/Wnxd13zP/versions/nH8YfRWs/Clumps-fabric-1.21.5-23.0.0.1.jar
+- checksum: sha256:9ab05e409c901bbf1f2b6cfd8ba6a754c2c2c2353207debe134e394b5d8f2066
+  name: LuckPerms-Fabric-5.5.4.jar
+  url: https://cdn.modrinth.com/data/Vebnzrzj/versions/sq8a8S4D/LuckPerms-Fabric-5.5.4.jar
+- checksum: sha256:05af92eececf7d037f5ea669a8c63c6dbcb1baffb5b22d1eb18a1a77894cb119
+  name: TAB v5.2.1.jar
+  url: https://cdn.modrinth.com/data/gG7VFbG0/versions/ahTabLeS/TAB%20v5.2.1.jar
+- checksum: sha256:67e7bd3037507c04ecfab8543222ad87552a81db85940c3c9935b2c517422fc4
+  name: bluemap-5.7-fabric.jar
+  url: https://cdn.modrinth.com/data/swbUV1cr/versions/Dr2hvJBc/bluemap-5.7-fabric.jar

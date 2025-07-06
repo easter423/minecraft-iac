@@ -1,0 +1,45 @@
+mods:
+  - slug: P7dR8mSH
+    category: library
+  - slug: 9s6osm5g
+    category: library
+  - slug: 1eAoo2KR
+    category: library
+  - slug: lhGA9TYQ
+    category: library
+  - slug: Ha28R6CL
+    category: library
+  - slug: l6YH9Als
+    category: monitoring
+  - slug: gvQqBUqZ
+    category: performance
+  - slug: fQEb0iXm
+    category: performance
+  - slug: e0M1UDsY
+    category: library
+  - slug: uXXizFIs
+    category: performance
+  - slug: dbVXHSlv
+    category: monitoring
+  - slug: qCvSZ8ra
+    category: utility
+  - slug: 9eGKb6K1
+    category: utility
+  - slug: EsAfCjCV
+    category: qol
+  - slug: uCdwusMi
+    category: graphics
+  - slug: KuNKN7d2
+    category: graphics
+  - slug: JrvR9OHr
+    category: qol
+  - slug: fALzjamp
+    category: utility
+  - slug: Wnxd13zP
+    category: qol
+  - slug: Vebnzrzj
+    category: server-management
+  - slug: gG7VFbG0
+    category: utility
+  - slug: swbUV1cr
+    category: graphics
