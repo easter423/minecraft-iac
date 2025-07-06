@@ -94,11 +94,36 @@ def add(slug: str, mc_version: str = typer.Option(None), loader: str = "fabric")
 
 @APP.command()
 def list_mods():
-    """List mods with categories."""
+    """List mods in table format."""
     mods_data = load_yaml(MODS_FILE)
+    mods = []
+
     for mod in mods_data.get("fabric_mods", []):
+        name = mod["name"]
+        slug = mod.get("slug", name)
+        ver = mod.get("version", name)
         cats = ", ".join(mod.get("categories", []))
-        typer.echo(f"{mod.get('slug', mod['name'])} - {mod['name']} [{cats}]")
+        checksum = mod.get("checksum", name).split(":")[-1][:6] if "checksum" in mod else "N/A"
+        mods.append({"slug": slug, "categories": cats, "version": ver, "checksum": checksum})
+
+    mods_sorted = sorted(
+        mods,
+        key=lambda m: (m["slug"].lower(), m["slug"]),
+    )
+
+    # Print table header
+    header = f"| {'Mod Name':<25} | {'Categories':<40} | {'Version':<40} | {'Checksum':<8} |"
+    line = f"|{'-' * 27}|{'-' * 42}|{'-' * 42}|{'-' * 10}|"
+    print(line)
+    print(header)
+    print(line)
+
+    # Print table rows
+    for mod in mods_sorted:
+        print(
+            f"| {mod['slug']:<25} | {mod['categories']:<40} | {mod['version']:<40} | {mod['checksum']:<8} |"
+        )
+    print(line)
 
 
 if __name__ == "__main__":
