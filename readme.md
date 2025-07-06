@@ -55,12 +55,7 @@
    ```
    인벤토리 파일에는 대상 서버의 IP와 SSH 정보가 들어 있습니다.
 
-## 4. 추가 정보
-- 모드 목록과 서버 속성은 `ansible/vars` 하위 파일에서 관리합니다.
-- 서버 메모리 크기는 `ansible/vars/server_properties.yml`의 `server_xms`, `server_xmx` 변수로 조정할 수 있습니다.
-- 자세한 과정은 [Notion 문서](https://www.notion.so/MC-2241afe72e6980da8b2ac86e0bcf270e)를 참고하실 수 있습니다.
-
-## 5. 모드 관리 스크립트
+## 4. 모드 관리 스크립트
 `scripts/manage_mods.py`는 [Modrinth](https://modrinth.com) API를 이용해 모드 정보를 조회하고 `ansible/vars/mods.yml`을 자동으로 갱신합니다.
 
 ### 사용 예시
@@ -70,7 +65,7 @@ python scripts/manage_mods.py add fabric-api --mc-version 1.21.5
 python scripts/manage_mods.py list-mods
 ```
 
-## 6. 변수 파일 안내
+## 5. 변수 파일 안내
 OpenTofu나 Ansible을 실행하기 전에 필요한 주요 변수는 다음 파일에서 관리합니다. 값을 수정해 원하는 설정으로 조정할 수 있습니다.
 
 - `infra/variables.tf` – 프로젝트 ID, 리전, 인스턴스 유형 등 인프라 전반 설정
@@ -80,4 +75,5 @@ OpenTofu나 Ansible을 실행하기 전에 필요한 주요 변수는 다음 파
 
 예를 들어 `infra/variables.tf`에서 `instance_type` 값을 변경하면 생성되는 VM의 사양이 달라집니다. `ansible/vars/server_properties.yml`에서 `server_xmx` 값을 수정하면 서버의 최대 메모리를 조정할 수 있습니다.
 
-
+## 6. 추가 정보
+- 자세한 과정은 [Notion 문서](https://www.notion.so/MC-2241afe72e6980da8b2ac86e0bcf270e)를 참고하실 수 있습니다.
