@@ -29,7 +29,7 @@ resource "google_compute_instance" "minecraft_instance" {
 
   metadata = {
     enable-osconfig = "TRUE"
-    ssh-keys = "${var.ssh_public_keys}"
+    ssh-keys = var.ssh_public_keys
   }
 
   name = var.instance_name
