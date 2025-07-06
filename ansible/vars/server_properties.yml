@@ -1,3 +1,10 @@
+# # This file contains variables for the Minecraft server properties and configurations.
+
+# server_xms and server_xmx should be set to same value for optimal performance.
+# The values should be specified in gigabytes (G) or megabytes (M).
+server_xms: "6G"  # Minimum memory allocation for the Minecraft server
+server_xmx: "6G"  # Maximum memory allocation for the Minecraft server
+
 minecraft_server_properties:
   motd: "\u00a7c(\uacbd)\u00a7a Sinchon\u00a72 Server\u00a7e \uc7ac\u00a76\uac1c\u00a7e\uc7a5\u00a7c (\ucd95)\u00a7r\n\u00a77\uc6b4\uc601 \uae30\uac04: \u00a7f~25.09.29"
   max-players: "10"
