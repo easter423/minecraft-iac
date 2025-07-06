@@ -61,3 +61,11 @@
 - 자세한 과정은 [Notion 문서](https://www.notion.so/MC-2241afe72e6980da8b2ac86e0bcf270e)를 참고하실 수 있습니다.
 
 
+### 모드 관리 도구
+`scripts/mod_manager.py`를 사용하면 모드 목록(`ansible/vars/mods_ext.yml`)을 기반으로
+다운로드 링크와 체크섬이 포함된 `mods.yml`을 자동으로 생성할 수 있습니다.
+간단한 웹 UI를 보려면 다음을 실행합니다.
+```bash
+streamlit run scripts/mod_manager.py gui
+```
+
