@@ -60,4 +60,11 @@
 - 서버 메모리 크기는 `ansible/roles/fabric_server/defaults/main.yml`의 `server_xms`, `server_xmx` 변수로 조정할 수 있습니다.
 - 자세한 과정은 [Notion 문서](https://www.notion.so/MC-2241afe72e6980da8b2ac86e0bcf270e)를 참고하실 수 있습니다.
 
+### Mods 관리 GUI
+`scripts/mod_manager.py`를 실행하면 간단한 창이 열리며 Modrinth에서 모드를 검색하여 목록에 추가하거나 삭제할 수 있습니다. 실행 예시는 다음과 같습니다.
+```bash
+python3 scripts/mod_manager.py
+```
+새 모드를 추가할 때는 슬러그를 입력하면 현재 Minecraft 버전에 맞는 최신 파일을 자동으로 다운로드해 `ansible/vars/mods.yml`에 등록합니다.
+
 
