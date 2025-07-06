@@ -1,0 +1,10 @@
+mods:
+  - slug: fabric-api
+    source: modrinth
+    category: core
+  - slug: cloth-config
+    source: modrinth
+    category: config
+  - slug: spark
+    source: modrinth
+    category: monitoring
