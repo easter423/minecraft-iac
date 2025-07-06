@@ -57,7 +57,7 @@
 
 ## 4. 추가 정보
 - 모드 목록과 서버 속성은 `ansible/vars` 하위 파일에서 관리합니다.
-- 서버 메모리 크기는 `ansible/roles/fabric_server/defaults/main.yml`의 `server_xms`, `server_xmx` 변수로 조정할 수 있습니다.
+- 서버 메모리 크기는 `ansible/vars/server_properties.yml`의 `server_xms`, `server_xmx` 변수로 조정할 수 있습니다.
 - 자세한 과정은 [Notion 문서](https://www.notion.so/MC-2241afe72e6980da8b2ac86e0bcf270e)를 참고하실 수 있습니다.
 
 ## 5. 모드 관리 스크립트
@@ -69,5 +69,15 @@ source .venv/bin/activate
 python scripts/manage_mods.py add fabric-api --mc-version 1.21.5
 python scripts/manage_mods.py list-mods
 ```
+
+## 6. 변수 파일 안내
+OpenTofu나 Ansible을 실행하기 전에 필요한 주요 변수는 다음 파일에서 관리합니다. 값을 수정해 원하는 설정으로 조정할 수 있습니다.
+
+- `infra/variables.tf` – 프로젝트 ID, 리전, 인스턴스 유형 등 인프라 전반 설정
+- `ansible/vars/versions.yml` – 설치에 필요한 모드 로더 및 패키지 버전 지정
+- `ansible/vars/server_properties.yml` – `server_xms`, `server_xmx`와 `minecraft_server_properties` 목록 관리
+- `ansible/vars/world_sync.yml` – 월드 동기화 방식 및 경로 설정
+
+예를 들어 `infra/variables.tf`에서 `instance_type` 값을 변경하면 생성되는 VM의 사양이 달라집니다. `ansible/vars/server_properties.yml`에서 `server_xmx` 값을 수정하면 서버의 최대 메모리를 조정할 수 있습니다.
 
 
