@@ -37,3 +37,39 @@ variable "ssh_public_keys" {
     ubuntu:ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDaAMIP3k12/ZyJL5xNfVvJ2DKSE0Q9YmezkRxngH1p4 minecraft-fabric2
   EOT
 }
+
+variable "instance_name" {
+  description = "Compute Engine 인스턴스 이름"
+  type        = string
+  default     = "instance-20250702-074431"
+}
+
+variable "nat_ip" {
+  description = "고정 NAT IP 주소"
+  type        = string
+  default     = "34.22.89.91"
+}
+
+variable "machine_type" {
+  description = "GCE 머신 타입"
+  type        = string
+  default     = "n2-custom-2-10240"
+}
+
+variable "boot_image" {
+  description = "부팅 디스크 이미지"
+  type        = string
+  default     = "projects/ubuntu-os-cloud/global/images/ubuntu-2404-noble-amd64-v20250628"
+}
+
+variable "boot_disk_size" {
+  description = "부팅 디스크 크기(GB)"
+  type        = number
+  default     = 50
+}
+
+variable "service_account_email" {
+  description = "인스턴스에 할당할 서비스 계정 이메일"
+  type        = string
+  default     = "686021559130-compute@developer.gserviceaccount.com"
+}
