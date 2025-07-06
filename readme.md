@@ -60,4 +60,14 @@
 - 서버 메모리 크기는 `ansible/roles/fabric_server/defaults/main.yml`의 `server_xms`, `server_xmx` 변수로 조정할 수 있습니다.
 - 자세한 과정은 [Notion 문서](https://www.notion.so/MC-2241afe72e6980da8b2ac86e0bcf270e)를 참고하실 수 있습니다.
 
+## 5. 모드 관리 스크립트
+`scripts/manage_mods.py`는 [Modrinth](https://modrinth.com) API를 이용해 모드 정보를 조회하고 `ansible/vars/mods.yml`을 자동으로 갱신합니다.
+
+### 사용 예시
+```bash
+source .venv/bin/activate
+python scripts/manage_mods.py add fabric-api --mc-version 1.21.5
+python scripts/manage_mods.py list-mods
+```
+
 
