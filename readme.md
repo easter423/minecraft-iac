@@ -37,7 +37,9 @@
    tofu init -upgrade
    tofu plan -out plan.out
    tofu apply plan.out
+   ../scripts/update_inventory.sh
    ```
+   `update_inventory.sh` 스크립트는 Terraform 출력에서 인스턴스 IP를 읽어 Ansible 인벤토리를 자동으로 작성합니다.
    기본 변수 값은 `infra/variables.tf`에서 확인할 수 있으며 필요에 따라 수정합니다.
 
 ## 3. 서버 설정(Ansible)
