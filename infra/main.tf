@@ -1,5 +1,6 @@
-# 이 코드는 Terraform 4.25.0 및 4.25.0과(와) 하위 호환되는 버전과 호환됩니다.
-# 이 Terraform 코드를 검증하는 방법은 https://developer.hashicorp.com/terraform/tutorials/gcp-get-started/google-cloud-platform-build#format-and-validate-the-configuration을 참조하세요.
+# This configuration is compatible with Terraform version 4.25.0 and all earlier supported versions.
+# For instructions on validating this Terraform code, please refer to the “Format and Validate the Configuration” tutorial here:
+# https://developer.hashicorp.com/terraform/tutorials/gcp-get-started/google-cloud-platform-build#format-and-validate-the-configuration
 
 resource "google_compute_instance" "minecraft_instance" {
   boot_disk {
