@@ -1,3 +1,6 @@
 ansible==11.7.0
 ansible-lint>=25.6.0
 python-dotenv>=1.1.0
+requests>=2.32.3
+typer>=0.12.3
+pyyaml>=6.0.2
