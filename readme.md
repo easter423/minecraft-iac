@@ -51,9 +51,14 @@
    ```
    상태 확인만 하려면 다음을 실행합니다.
    ```bash
-   ansible-playbook -i inventory.ini status.yml
-   ```
-   인벤토리 파일에는 대상 서버의 IP와 SSH 정보가 들어 있습니다.
+ansible-playbook -i inventory.ini status.yml
+```
+인벤토리 파일에는 대상 서버의 IP와 SSH 정보가 들어 있습니다.
+
+모드 설정 파일만 동기화하려면 다음을 실행합니다.
+```bash
+ansible-playbook -i inventory.ini mod_config.yml
+```
 
 ## 4. 모드 관리 스크립트
 `scripts/manage_mods.py`는 [Modrinth](https://modrinth.com) API를 이용해 모드 정보를 조회하고 `ansible/vars/mods.yml`을 자동으로 갱신합니다.

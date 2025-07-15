@@ -1,0 +1,155 @@
+- name: Manage mod configuration repository
+  hosts: minecraft
+  become: true
+  vars_files:
+    - vars/mods_sync.yml
+  tasks:
+    - name: Ensure config directory exists
+      ansible.builtin.file:
+        path: /opt/minecraft/config
+        state: directory
+        owner: minecraft
+        group: minecraft
+        mode: "0755"
+
+    - name: Ensure .ssh directory exists
+      ansible.builtin.file:
+        path: /home/minecraft/.ssh
+        state: directory
+        owner: minecraft
+        group: minecraft
+        mode: "0700"
+
+    - name: Extract repo host
+      ansible.builtin.set_fact:
+        config_repo_host: "{{ config_repo.split('@')[-1].split(':')[0] }}"
+
+    - name: Add repository host to known_hosts
+      ansible.builtin.known_hosts:
+        path: /home/minecraft/.ssh/known_hosts
+        name: "{{ config_repo_host }}"
+        key: "{{ lookup('pipe', 'ssh-keyscan -t rsa ' + config_repo_host) }}"
+        state: present
+        hash_host: false
+
+    - name: Check if deploy key exists
+      ansible.builtin.stat:
+        path: /home/minecraft/.ssh/id_rsa_mod_config.pub
+      register: mod_key_stat
+
+    - name: Generate deploy key
+      community.crypto.openssh_keypair:
+        path: /home/minecraft/.ssh/id_rsa_mod_config
+        type: rsa
+        size: 4096
+        owner: minecraft
+        group: minecraft
+        mode: "0600"
+      when: not mod_key_stat.stat.exists
+      register: mod_deploy_key
+
+    - name: Show deploy key instructions
+      ansible.builtin.debug:
+        msg: |
+          A new SSH deploy key has been generated for the config repository.
+          Add /home/minecraft/.ssh/id_rsa_mod_config.pub to your repository.
+      when: mod_deploy_key.changed or not mod_key_stat.stat.exists
+
+    - name: Check if config repo initialized
+      ansible.builtin.stat:
+        path: /opt/minecraft/config/.git
+      register: config_repo_stat
+      become: true
+      become_user: minecraft
+
+    - name: Initialize config git repo
+      ansible.builtin.command: git init -b {{ config_repo_branch }}
+      args:
+        chdir: /opt/minecraft/config
+        creates: /opt/minecraft/config/.git
+        warn: false
+      become: true
+      become_user: minecraft
+      when: not config_repo_stat.stat.exists
+      register: config_init
+
+    - name: Set git user.name
+      community.general.git_config:
+        name: user.name
+        value: "{{ config_git_user_name }}"
+        scope: local
+        repo: /opt/minecraft/config
+      become: true
+      become_user: minecraft
+
+    - name: Set git user.email
+      community.general.git_config:
+        name: user.email
+        value: "{{ config_git_user_email }}"
+        scope: local
+        repo: /opt/minecraft/config
+      become: true
+      become_user: minecraft
+
+    - name: Add origin remote
+      ansible.builtin.command: git remote add origin {{ config_repo }}
+      args:
+        chdir: /opt/minecraft/config
+        warn: false
+      when: config_init.changed
+      become: true
+      become_user: minecraft
+
+    - name: Initial commit
+      ansible.builtin.command: git add .
+      args:
+        chdir: /opt/minecraft/config
+        warn: false
+      when: config_init.changed
+      become: true
+      become_user: minecraft
+
+    - name: Commit initial content
+      ansible.builtin.command: git commit -m "Initial config" || true
+      args:
+        chdir: /opt/minecraft/config
+        warn: false
+      when: config_init.changed
+      changed_when: false
+      become: true
+      become_user: minecraft
+
+    - name: Push initial repository
+      ansible.builtin.command: git push -u origin {{ config_repo_branch }}
+      environment:
+        GIT_SSH_COMMAND: "ssh -i /home/minecraft/.ssh/id_rsa_mod_config -o StrictHostKeyChecking=no"
+      args:
+        chdir: /opt/minecraft/config
+        warn: false
+      when: config_init.changed
+      changed_when: false
+      become: true
+      become_user: minecraft
+
+    - name: Pull latest config
+      ansible.builtin.command: git pull --rebase
+      environment:
+        GIT_SSH_COMMAND: "ssh -i /home/minecraft/.ssh/id_rsa_mod_config -o StrictHostKeyChecking=no"
+      args:
+        chdir: /opt/minecraft/config
+        warn: false
+      changed_when: false
+      become: true
+      become_user: minecraft
+
+    - name: Push local changes
+      ansible.builtin.command: git push origin {{ config_repo_branch }}
+      environment:
+        GIT_SSH_COMMAND: "ssh -i /home/minecraft/.ssh/id_rsa_mod_config -o StrictHostKeyChecking=no"
+      args:
+        chdir: /opt/minecraft/config
+        warn: false
+      when: config_push_changes | bool
+      changed_when: false
+      become: true
+      become_user: minecraft

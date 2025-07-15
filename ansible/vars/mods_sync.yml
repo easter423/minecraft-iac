@@ -1,0 +1,10 @@
+# Mod configuration repository settings
+config_repo: "git@github.com:example/mc-config.git"
+config_repo_branch: "main"
+
+# Git user for commits
+config_git_user_name: "Minecraft Config Bot"
+config_git_user_email: "minecraft-config@example.com"
+
+# Whether to push local config changes back to remote
+config_push_changes: false
